@@ -25,7 +25,7 @@ namespace Store.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddDistributedMemoryCache();
+            services.AddDistributedMemoryCache();//описывает место хранения сессий на сервере
             services.AddSession(options =>
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(20);
@@ -33,7 +33,9 @@ namespace Store.Web
                 options.Cookie.IsEssential = true;
             });
             services.AddSingleton<IBookRepository, BookRepository>();
+            services.AddSingleton<IOrderRepository, OrderRepository>();
             services.AddSingleton<BookService>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
