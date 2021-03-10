@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Store
 {
     public class OrderPayment
     {
         public string UniqueCode { get; }
-        public string Desciption { get; }
-        public IReadOnlyDictionary<string,string> Parameters { get; }
+
+        public string Description { get; }
+
+        public IReadOnlyDictionary<string, string> Parameters { get; }
+
         public OrderPayment(string uniqueCode,
                             string description,
-                            IReadOnlyDictionary<string,string> parameters)
+                            IReadOnlyDictionary<string, string> parameters)
         {
             if (string.IsNullOrWhiteSpace(uniqueCode))
                 throw new ArgumentException(nameof(uniqueCode));
@@ -23,7 +25,7 @@ namespace Store
                 throw new ArgumentNullException(nameof(parameters));
 
             UniqueCode = uniqueCode;
-            Desciption = description;
+            Description = description;
             Parameters = parameters;
         }
     }
