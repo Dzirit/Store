@@ -44,7 +44,7 @@
     </tfoot>
 </table>
 
-<form action="@Url.Action("SendConfirmationCode")" method="post">
+<form action="@Url.Action(nameof(OrderController.SendConfirmation))" method="post">
     <input type="hidden" name="id" value="@Model.Id" />
     <div class="form-group">
         <label for="cellPhone">Мобильный телефон</label>
@@ -56,4 +56,3 @@
     </div>
     <button type="submit" class="btn btn-success">Отправить код</button>
 </form>
-© 2021 GitHub, Inc.
