@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Store.Tests
 {
     class StubBookRepository : IBookRepository
     {
         public Book[] ResultOfGetAllByIsbn { get; set; }
-        public Book[] ResultOfGetAllByTitleOrAuthorn { get; set; }
+
+        public Book[] ResultOfGetAllByTitleOrAuthor { get; set; }
 
         public Book[] GetAllByIds(IEnumerable<int> bookIds)
         {
-            throw new NotImplementedException();
+            throw new System.NotImplementedException();
         }
 
         public Book[] GetAllByIsbn(string isbn)
@@ -21,13 +20,12 @@ namespace Store.Tests
 
         public Book[] GetAllByTitleOrAuthor(string titleOrAuthor)
         {
-            return ResultOfGetAllByTitleOrAuthorn;
+            return ResultOfGetAllByTitleOrAuthor;
         }
 
         public Book GetById(int id)
         {
-            throw new NotImplementedException();
+            throw new System.NotImplementedException();
         }
-        
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
@@ -79,7 +80,10 @@ namespace Store.Web.Controllers
 
             var book = bookRepository.GetById(bookId);
 
-            order.AddOrUpdateItem(book, count);
+            if (order.Items.TryGet(bookId, out OrderItem orderItem))
+                orderItem.Count += count;
+            else
+                order.Items.Add(bookId, book.Price, count);
 
             SaveOrderAndCart(order, cart);
 
@@ -91,7 +95,7 @@ namespace Store.Web.Controllers
         {
             (Order order, Cart cart) = GetOrCreateOrderAndCart();
 
-            order.GetItem(bookId).Count = count;
+            order.Items.Get(bookId).Count = count;
 
             SaveOrderAndCart(order, cart);
 
@@ -129,7 +133,7 @@ namespace Store.Web.Controllers
         {
             (Order order, Cart cart) = GetOrCreateOrderAndCart();
 
-            order.RemoveItem(bookId);
+            order.Items.Remove(bookId);
 
             SaveOrderAndCart(order, cart);
 
@@ -208,6 +212,7 @@ namespace Store.Web.Controllers
             orderRepository.Update(order);
 
             HttpContext.Session.Remove(cellPhone);
+
             var model = new DeliveryModel
             {
                 OrderId = id,
@@ -223,21 +228,25 @@ namespace Store.Web.Controllers
         {
             var deliveryService = deliveryServices.Single(service => service.UniqueCode == uniqueCode);
             var order = orderRepository.GetById(id);
+
             var form = deliveryService.CreateForm(order);
 
             return View("DeliveryStep", form);
         }
 
         [HttpPost]
-        public IActionResult NextDelivery(int id,string uniqueCode, int step, Dictionary<string,string> values)
+        public IActionResult NextDelivery(int id, string uniqueCode, int step, Dictionary<string, string> values)
         {
             var deliveryService = deliveryServices.Single(service => service.UniqueCode == uniqueCode);
+
             var form = deliveryService.MoveNextForm(id, step, values);
-            if(form.IsFinal)
+
+            if (form.IsFinal)
             {
                 var order = orderRepository.GetById(id);
                 order.Delivery = deliveryService.GetDelivery(form);
                 orderRepository.Update(order);
+
                 var model = new DeliveryModel
                 {
                     OrderId = id,
@@ -247,6 +256,7 @@ namespace Store.Web.Controllers
 
                 return View("PaymentMethod", model);
             }
+
             return View("DeliveryStep", form);
         }
 
@@ -255,13 +265,12 @@ namespace Store.Web.Controllers
         {
             var paymentService = paymentServices.Single(service => service.UniqueCode == uniqueCode);
             var order = orderRepository.GetById(id);
+
             var form = paymentService.CreateForm(order);
 
             var webContractorService = webContractorServices.SingleOrDefault(service => service.UniqueCode == uniqueCode);
-            if( webContractorService!=null)
-            {
+            if (webContractorService != null)
                 return Redirect(webContractorService.GetUri);
-            }
 
             return View("PaymentStep", form);
         }
@@ -270,22 +279,25 @@ namespace Store.Web.Controllers
         public IActionResult NextPayment(int id, string uniqueCode, int step, Dictionary<string, string> values)
         {
             var paymentService = paymentServices.Single(service => service.UniqueCode == uniqueCode);
+
             var form = paymentService.MoveNextForm(id, step, values);
+
             if (form.IsFinal)
             {
                 var order = orderRepository.GetById(id);
                 order.Payment = paymentService.GetPayment(form);
                 orderRepository.Update(order);
-                
 
                 return View("Finish");
             }
+
             return View("PaymentStep", form);
         }
 
         public IActionResult Finish()
         {
             HttpContext.Session.RemoveCart();
+
             return View();
         }
     }
