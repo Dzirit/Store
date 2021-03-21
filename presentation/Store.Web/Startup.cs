@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Store.Contractors;
 using Store.Messages;
+using Store.Data.EF;
 using Store.Web.App;
 using Store.Web.Contractors;
 using Store.YandexKassa;
@@ -33,6 +34,8 @@ namespace Store.Web
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
+
+            services.AddEfRepositories(Configuration.GetConnectionString("Store"));
 
             //services.AddSingleton<IBookRepository, BookRepository>();
             //services.AddSingleton<IOrderRepository, OrderRepository>();
