@@ -15,8 +15,11 @@ namespace Store.Data.EF
                 {
                     options.UseSqlServer(connectionString);
                 },
-                ServiceLifetime.Transient
+                ServiceLifetime.Transient// один экземпляр на каждый запрос
                 );
+
+            services.AddScoped<Dictionary<Type, StoreDbContext>>();// один экземпляр на каждый веб запрос(некий контейнер который хранит http context запроса) 
+            services.AddSingleton<DbContextFactory>();
             services.AddSingleton<IBookRepository, BookRepository>();
             services.AddSingleton<IOrderRepository, OrderRepository>();
             return services;
