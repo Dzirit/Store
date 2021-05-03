@@ -5,6 +5,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace Store.Data.EF
 {
+    /// <summary>
+    /// BookRepository у нас singleton а dbcontext transient. Если делать DI через
+    /// конструктор то dbcontext создасться единственный вместе с синглтоном и будет жить постоянно
+    /// а dbcontext создаваыемые далие при запросах не будут иметь отношение к bookrepository
+    /// </summary>
     class DbContextFactory
     {
         private readonly IHttpContextAccessor httpContextAccessor;
