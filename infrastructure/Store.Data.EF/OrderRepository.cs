@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace Store.Data.EF
@@ -25,6 +26,17 @@ namespace Store.Data.EF
             return Order.Mapper.Map(dto);
         }
 
+        public async Task<Order> CreateAsync()
+        {
+            var dbContext = dbContextFactory.Create(typeof(OrderRepository));
+
+            var dto = Order.DtoFactory.Create();
+            dbContext.Orders.Add(dto);
+            await dbContext.SaveChangesAsync();
+
+            return Order.Mapper.Map(dto);
+        }
+
         public Order GetById(int id)
         {
             var dbContext = dbContextFactory.Create(typeof(OrderRepository));
@@ -36,11 +48,29 @@ namespace Store.Data.EF
             return Order.Mapper.Map(dto);
         }
 
+        public async Task<Order> GetByIdAsync(int id)
+        {
+            var dbContext = dbContextFactory.Create(typeof(OrderRepository));
+
+            var dto =await dbContext.Orders
+                               .Include(order => order.Items)
+                               .SingleAsync(order => order.Id == id);
+
+            return Order.Mapper.Map(dto);
+        }
+
         public void Update(Order order)
         {
             var dbContext = dbContextFactory.Create(typeof(OrderRepository));
 
             dbContext.SaveChanges();
+        }
+
+        public async Task UpdateAsync(Order order)
+        {
+            var dbContext = dbContextFactory.Create(typeof(OrderRepository));
+
+            await dbContext.SaveChangesAsync();
         }
     }
 }
